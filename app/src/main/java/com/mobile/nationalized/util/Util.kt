@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mobile.nationalized.R
 
-fun ImageView.downloadFromUrl(url: String, progressDrawable: CircularProgressDrawable){
+fun ImageView.downloadFromUrl(url: String?, progressDrawable: CircularProgressDrawable){
 
     val options = RequestOptions()
         .placeholder(progressDrawable)

@@ -32,7 +32,7 @@ class CountryAdapter(var countryList : ArrayList<Country>)
         holder.view.findViewById<TextView>(R.id.region).text = countryList[position].countryRegion
 
         holder.view.setOnClickListener {
-            val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment()
+            val action = FeedFragmentDirections.actionFeedFragmentToCountryFragment(countryList[position].uuid)
             Navigation.findNavController(it).navigate(action)
         }
 

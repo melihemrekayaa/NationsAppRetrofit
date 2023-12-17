@@ -20,8 +20,7 @@
 
         <!-- Diğer temel renk ayarları -->
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="windowNoTitle">false</item>
-        <item name="windowActionBar">true</item>
+
 
 
     </style>

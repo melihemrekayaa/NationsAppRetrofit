@@ -15,7 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mobile.nationalized.R
 import com.mobile.nationalized.ui.adapter.CountryAdapter
 import com.mobile.nationalized.ui.viewmodel.FeedViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FeedFragment : Fragment() {
 
     private lateinit var viewModel: FeedViewModel
@@ -60,7 +62,7 @@ class FeedFragment : Fragment() {
             recyclerView?.visibility = View.GONE
             countryError?.visibility = View.GONE
             countryLoading?.visibility = View.VISIBLE
-            viewModel.refreshData()
+            viewModel.refreshFromAPI()
             swipeRefreshLayout!!.isRefreshing = false
         }
 
