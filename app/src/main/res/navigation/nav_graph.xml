@@ -26,5 +26,8 @@
             android:name="countryUuid"
             app:argType="integer"
             android:defaultValue="0" />
+        <argument
+            android:name="country"
+            app:argType="com.mobile.nationalized.data.entity.Country" />
     </fragment>
 </navigation>

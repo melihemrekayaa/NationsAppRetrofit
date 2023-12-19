@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toolbar
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.mobile.nationalized.R
+import com.mobile.nationalized.databinding.FragmentFeedBinding
 import com.mobile.nationalized.ui.adapter.CountryAdapter
 import com.mobile.nationalized.ui.viewmodel.FeedViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,16 +24,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class FeedFragment : Fragment() {
 
     private lateinit var viewModel: FeedViewModel
-    private lateinit var countryAdapter : CountryAdapter
-
-    private var recyclerView: RecyclerView? = null
-    private var countryError: TextView? = null
-    private var countryLoading: ProgressBar? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout ? = null
+    private lateinit var binding: FragmentFeedBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val tempViewModel : FeedViewModel by viewModels()
+        viewModel = tempViewModel
 
     }
 
@@ -39,15 +38,15 @@ class FeedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val view = inflater.inflate(R.layout.fragment_feed, container, false)
-        recyclerView = view.findViewById(R.id.countryList)
-        countryError = view.findViewById(R.id.countryError)
-        countryLoading = view.findViewById(R.id.countryLoading)
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_feed,container,false)
+        binding.feedFragment = this
 
-        countryAdapter = CountryAdapter(arrayListOf())
+        viewModel.countries.observe(viewLifecycleOwner){
+            val countryAdapter = CountryAdapter(requireContext(),it,viewModel)
+            binding.countryAdapter = countryAdapter
+        }
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,15 +54,14 @@ class FeedFragment : Fragment() {
         viewModel = ViewModelProvider(this)[FeedViewModel::class.java]
         viewModel.refreshData()
 
-        recyclerView?.layoutManager = LinearLayoutManager(context)
-        recyclerView?.adapter = countryAdapter
 
-        swipeRefreshLayout?.setOnRefreshListener {
-            recyclerView?.visibility = View.GONE
-            countryError?.visibility = View.GONE
-            countryLoading?.visibility = View.VISIBLE
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.countryList.visibility = View.GONE
+            binding.countryError.visibility = View.GONE
+            binding.countryLoading.visibility = View.VISIBLE
             viewModel.refreshFromAPI()
-            swipeRefreshLayout!!.isRefreshing = false
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
         observeLiveData()
@@ -73,8 +71,7 @@ class FeedFragment : Fragment() {
     private fun observeLiveData(){
         viewModel.countries.observe(viewLifecycleOwner) { countries ->
             countries.let {
-                recyclerView?.visibility = View.VISIBLE
-                countryAdapter.updateCountryList(countries)
+                binding.countryList.visibility = View.VISIBLE
             }
 
         }
@@ -82,10 +79,10 @@ class FeedFragment : Fragment() {
         viewModel.countryError.observe(viewLifecycleOwner){ error->
             error.let {
                 if (it){
-                    countryError?.visibility = View.VISIBLE
+                    binding.countryError.visibility = View.VISIBLE
                 }
                 else{
-                    countryError?.visibility = View.GONE
+                    binding.countryError.visibility = View.GONE
                 }
             }
         }
@@ -93,12 +90,12 @@ class FeedFragment : Fragment() {
         viewModel.countryLoading.observe(viewLifecycleOwner){ loading->
             loading.let {
                 if (it){
-                    countryLoading?.visibility = View.VISIBLE
-                    recyclerView?.visibility = View.GONE
-                    countryError?.visibility = View.GONE
+                    binding.countryLoading.visibility = View.VISIBLE
+                    binding.countryList.visibility = View.GONE
+                    binding.countryError.visibility = View.GONE
                 }
                 else{
-                    countryLoading?.visibility = View.GONE
+                    binding.countryLoading.visibility = View.GONE
                 }
             }
         }

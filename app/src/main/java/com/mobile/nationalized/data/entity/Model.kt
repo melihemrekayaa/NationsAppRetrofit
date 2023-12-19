@@ -30,7 +30,7 @@ data class Country(
 
 
 
-    )
+    ) : Serializable
 {
      @PrimaryKey(autoGenerate = true)
      var uuid: Int = 0
